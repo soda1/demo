@@ -1,20 +1,10 @@
 package com.eric.netty.savefile;
 
-import con.eric.utils.LoggerUtils;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
+import com.eric.utils.LoggerUtils;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
-import jdk.nashorn.internal.runtime.options.LoggingOption;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.EntryMessage;
-
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 
 /**
  * @author eric

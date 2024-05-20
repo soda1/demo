@@ -1,6 +1,9 @@
 package com.eric.stream;
 
 
+
+import org.junit.Test;
+
 import java.util.*;
 
 /**
