@@ -1,4 +1,4 @@
-package com.eric.netty.savefile;
+package com.eric.netty.savefile.client;
 
 import com.eric.utils.LoggerUtils;
 import io.netty.channel.ChannelHandlerContext;
@@ -17,7 +17,7 @@ public class ClientChannelHandler extends ChannelOutboundHandlerAdapter {
 
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        ctx.writeAndFlush(msg);
+        ctx.write(msg);
         // super.write(ctx, msg, promise);
     }
 }

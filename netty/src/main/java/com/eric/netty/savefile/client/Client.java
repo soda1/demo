@@ -1,8 +1,7 @@
-package com.eric.netty.savefile;
+package com.eric.netty.savefile.client;
 
 import com.eric.utils.LoggerUtils;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -10,6 +9,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -37,11 +39,12 @@ public class Client {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast("handler", new ClientChannelHandler());
-                                // outbound order must higher than inbound
-                                // .addLast("outHandler", new ClientChannelOutboundHandler())
-                                // .addLast("handler1", new ClientChannelHandler())
-                                // .addLast("handler", new ClientChannelHandle2());
+                                .addLast("objEncode", new ObjectEncoder())
+                                .addLast("objDecode", new ObjectDecoder(ClassResolvers
+                                        .cacheDisabled(this.getClass().getClassLoader())))
+                                // .addLast("encode", new MsgEncode())
+                                // .addLast("decode", new MsgDecode())
+                                .addLast("read", new ClientReadHandler());
 
                     }
                 })
@@ -65,10 +68,10 @@ public class Client {
         Channel channel = client.channel;
         for (; ; ) {
             String line = in.readLine();
-            writeFuture = channel.writeAndFlush(Unpooled.copiedBuffer((line + "\r\n").getBytes()));
+            writeFuture = channel.writeAndFlush(line);
 
             writeFuture.addListener(it -> {
-              logger.info("send msg:{}", it.isSuccess());
+              logger.debug("send msg:{}", it.get());
             });
             if ("quit".equals(line.toLowerCase())) {
                 // client.channel.closeFuture().awaitUninterruptibly();

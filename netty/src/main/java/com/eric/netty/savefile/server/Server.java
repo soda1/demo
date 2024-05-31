@@ -1,4 +1,4 @@
-package com.eric.netty.savefile;
+package com.eric.netty.savefile.server;
 
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -9,6 +9,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 
 import java.net.InetSocketAddress;
 
@@ -30,8 +33,12 @@ public class Server {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
-                                // .addLast("out", new ServerChannelOutboundHandler())
-                                .addLast("in", new ServerChannelHandler());
+                                // serialized po to byteBuf
+                                .addLast("objEncode", new ObjectEncoder())
+                                .addLast("objDecode", new ObjectDecoder(ClassResolvers
+                                        .cacheDisabled(this.getClass().getClassLoader())))
+                                // business logic
+                                .addLast("read", new ServerReadMsgHandler());
                     }
                 });
         ChannelFuture future = serverBootstrap.bind().syncUninterruptibly();
